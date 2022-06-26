@@ -9,8 +9,12 @@ import (
 )
 
 func Migrate() {
+	postgres := os.Getenv("POSTGRES_URL")
+	if postgres == "" {
+		log.Fatal("POSTGRES_URL Environment Variable not set.. Exiting!!")
+	}
 	log.Info("Database URI is: ", os.Getenv("POSTGRES_URL"))
-	m, err := migrate.New("file://../db/migrations", os.Getenv("POSTGRES_URL"))
+	m, err := migrate.New("file://../db/migrations", postgres)
 	if err != nil {
 		log.Fatal("Cannot initialize golang-migrate: ", err)
 	}
