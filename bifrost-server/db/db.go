@@ -1,9 +1,11 @@
 package db
 
 import (
+	"context"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
@@ -22,4 +24,13 @@ func Migrate() {
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 		log.Fatal("Cannot apply database migrations: ", err)
 	}
+}
+
+func CreateConn() *pgxpool.Pool {
+	conn, err := pgxpool.Connect(context.Background(), os.Getenv("POSTGRES_URL"))
+	if err != nil {
+		log.Fatal("Unable to connect to database: ", err)
+		os.Exit(1)
+	}
+	return conn
 }
